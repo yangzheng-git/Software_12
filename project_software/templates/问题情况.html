@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<!-- META DATA -->
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+	<!-- TITLE OF SITE -->
+	<title>问题情况</title>
+	<!-- favicon -->
+	<!--<link rel="shortcat icon" href="/favicon.ico" type="image/x-icon">-->
+
+	<!--font-awesome.min.css-->
+	<link rel="stylesheet" href="../static/assets/css/font-awesome.min.css">
+
+	<!--linear icon css-->
+	<link rel="stylesheet" href="../static/assets/css/icon-font.min.css">
+
+	<!--chartist.min.css-->
+	<link rel="stylesheet" href="../static/assets/chartist/css/chartist.min.css">
+
+	<!--bootstrap.min.css-->
+	<link rel="stylesheet" href="../static/assets/css/bootstrap.min.css">
+
+	<!--style.css-->
+	<link rel="stylesheet" href="../static/assets/css/style.css">
+
+	<!--responsive.css-->
+	<link rel="stylesheet" href="../static/assets/css/responsive.css">
+
+    <link rel="stylesheet" type="text/css" href="../static/assets/css/daterangepicker.css" />
+	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]-->
+	<script src="../static/assets/js/html5shiv.min.js"></script>
+	<script src="../static/assets/js/respond.min.js"></script>
+    <script src="../static/plugin/echarts-4.4.0/dist/echarts.min.js"></script>
+    <script type="text/javascript" src="../static/assets/js/refresh/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/assets/js/moment.min.js"></script>
+    <script type="text/javascript" src="../static/assets/js/daterangepicker.min.js"></script>
+	<script src="../static/bootstrap-select-1.13.0-dev/js/bootstrap-select.js" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+    <div hidden id="bubbles"></div>
+    	<!-- wrapper -->
+	<div id="wrapper">
+
+		<!-- navbar -->
+		<nav class="navbar navbar-default navbar-fixed-top">
+			<div class="brand" style="width:200px">
+				<a href="/display" style="font-size:20px">
+					{{current.role}}<span>{{current.name}}</span>
+				</a>
+			</div><!--/.brand -->
+			<div class="container-fluid">
+				<span class="navbar-left">
+					<br>
+					<h1>&nbsp;政府大数据实时治理系统</h1>
+				</span><!--/form -->
+				<div class="navbar-menu">
+					<ul class="nav navbar-nav navbar-right">
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle icon-menu" data-toggle="dropdown">
+								<i data-feather="bell"></i>
+								<span class="badge badge-bg-1">{{ dbnum }}</span>
+							</a>
+						</li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+								<img src="{{current.real_avatar}}" class="img-circle" alt="parson-img" height="40px">
+								<i class="icon-submenu fa fa-angle-down"></i>
+							</a>
+							<ul class="dropdown-menu">
+								<li><a href="/profile"><i class="lnr lnr-user"></i> <span>个人信息</span></a></li>
+								<li><a href="/"><i class="lnr lnr-exit"></i> <span>退出登录</span></a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div><!--/.container-fluid -->
+
+		</nav><!--/nav -->
+		<!-- END NAVBAR -->
+
+		<!-- LEFT SIDEBAR -->
+		<div id="sidebar-nav" class="sidebar" style="width:200px">
+			<div class="sidebar-scroll">
+				<nav>
+					<ul class="nav">
+
+						<li>
+							<a href="/display" >
+								<i data-feather="home"></i> <span>主页</span>
+							</a>
+						</li>
+
+						<li class="active">
+							<a href="/chart1">
+								<i data-feather="pie-chart"></i> <span>问题情况</span>
+							</a>
+						</li>
+
+						<li>
+							<a href="/chart2">
+								<i data-feather="bar-chart"></i> <span>街道事件</span>
+							</a>
+						</li>
+
+						<li>
+							<a href="/chart3">
+								<i data-feather="map-pin"></i> <span>热点社区</span>
+							</a>
+						</li>
+
+						{% if current.role == "管理员" %}
+							<li>
+								<a href="/manage">
+									<i data-feather="user-check"></i> <span>数据和账号管理</span>
+								</a>
+							</li>
+						{% endif %}
+
+						<li>
+							<a href="/abnormal">
+								<i data-feather="bell"></i> <span>未结办事件</span>
+							</a>
+						</li>
+					</ul>
+				</nav>
+			</div>
+
+		</div>
+		<!-- END LEFT SIDEBAR -->
+
+		<!-- MAIN -->
+		<div class="main">
+
+			<!-- MAIN CONTENT -->
+			<div class="main-content">
+				<div class="container-fluid">
+
+					<div class="main-content-head">
+						<h2>你好 {{current.role}}{{current.name}}!</h2>
+						<p>欢迎使用政府大数据实时治理系统</p>
+					</div>
+
+                    <div class="profile-content">
+						<div class="row">
+                            <div class="col-sm-12">
+                                <div class="box">
+                                    <div class="item">
+                                        <div class="item-responsive ">
+                                            <br>
+                                            <h2 align="center" style="font-size:25px">异常事件报警</h2>
+                                            <p hidden id="abdata">{{ abdata }}</p>
+
+                                            <marquee  direction="up"  behavior="scroll"  scrollamount="5"  loop="-1"  bgcolor="white"  hspace="100"   vspace="50"  height="100"></marquee>
+
+                                            <script>
+                                                    var div = document.getElementById('abdata');
+                                                    obj = JSON.parse(div.innerHTML);
+                                                    var elments = new Array();//图例
+                                                    for(var i=0;i<obj.length;i++)
+                                                    {
+                                                        elments[i]=obj[i]
+                                                    }
+
+                                                     for(var i=0;i<obj.length;i++) {
+                                                         marquee = document.getElementsByTagName('marquee')[0];
+                                                         str = marquee.innerHTML;
+                                                         str += "<p color=\"black\">"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\"><span>" + "  " + elments[i].time +" "+ "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#66CCCC\"  size=\"5\"><span>" + elments[i].street + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\">" + "的" + "</font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#00FFFF\"  size=\"5\"><span> " + elments[i].community + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\">" + "从" + "</font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#990099\"  size=\"5\"><span> " + elments[i].source + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\">" + "接到" + "</font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#CC0000\"  size=\"5\"><span> " + elments[i].sub_type + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#0000CC\"  size=\"5\"><span> " + elments[i].property + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\">" + "，请" + "</font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#CC00CC\"  size=\"5\"><span> " + elments[i].unity_name + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\">" + "尽快前往处理." + "</font>"
+                                                         str += "<br></p>"
+                                                         marquee.innerHTML = str;
+                                                     }
+                                            </script>
+                                        </div><!--/.table-responsive-->
+                                    </div><!--/.item-->
+                                </div><!--/.box-->
+                            </div><!--/.col-->
+                        </div>
+                        <div class="row">
+							<div class="box">
+								<div class="col-sm-12">
+									<div class="item">
+										<div class="box">
+											<div class="col-sm-4">
+												<div class="box">
+													<div class="box-head">
+														<h2>问题性质</h2>
+													</div><!--/.box-head-->
+													<div class="item">
+														<div class="item-responsive ">
+															<p hidden id="month1">{{ M1 }}</p>
+                                                            <p hidden id="day1">{{ D1 }}</p>
+                                                            <p hidden id="month2">{{ M2 }}</p>
+                                                            <p hidden id="day2">{{ D2 }}</p>
+                                                            <p hidden id="demo">测试</p>
+
+                                                            <p hidden id="data">{{ data1 }}</p>
+
+
+
+
+
+
+                                                            <div hidden id="div1">
+                                                                <p>{{ data1 }}</p>
+                                                            </div>
+
+                                                            <script>
+                                                                    var div = document.getElementById('data');
+
+                                                                    if (div.innerText.indexOf("没有") != -1)
+                                                                    {
+                                                                        alert('没有该日期范围的数据');
+                                                                    }
+                                                                function ajaxForm() {
+                                                                    $.ajax({
+                                                                        url: "/chart1/refresh",   //对应flask中的路由
+                                                                        type: "POST", //请求方法
+                                                                        data: 'hello',   //传送的数据
+                                                                        success: function (data1) {
+                                                                            document.getElementById('div1').innerText = data1;
+                                                                        }
+                                                                    })
+                                                                }
+                                                                function read() {
+                                                                    var div = document.getElementById('data');
+                                                                    obj = JSON.parse(div.innerHTML);
+
+                                                                    document.getElementById("demo").innerHTML = obj;
+                                                                    //console.log(obj)
+                                                                }
+
+                                                            </script>
+                                                            <div class="chart" align="center">
+                                                                <div id="pie_echarts" style="width: 500px;height:400px;margin-top:50px;"></div>
+                                                            </div>
+                                                            <script>
+
+                                                                function myFunction() {
+                                                                    setInterval(function () {
+                                                                        $(document).ready(function () {
+                                                                            ajaxForm()
+                                                                            judge()
+                                                                        });
+                                                                    }, 2000);
+                                                                }
+
+                                                                function judge() {
+                                                                    if (document.getElementById('data').innerText !== document.getElementById('div1').innerText) {
+                                                                        document.getElementById('data').innerText = $.trim(document.getElementById('div1').innerText);
+                                                                        read()
+                                                                        run()
+                                                                    }
+                                                                }
+
+
+                                                                // 基于准备好的dom，初始化echarts实例
+                                                                function run() {
+
+                                                                    var myChart = echarts.init(document.getElementById('pie_echarts'));
+                                                                    var elments = new Array();//图例
+                                                                    for (var i = 0; i < obj.length; i++) {
+
+                                                                        elments[i] = obj[i][0]
+                                                                    }
+
+                                                                    var elments2 = [];
+
+
+                                                                    for (var i = 0; i < obj.length; i++) {
+
+                                                                        var k = {};
+                                                                        k.value = obj[i][1];
+                                                                        k.name = obj[i][0];
+                                                                        elments2[i] = k;
+                                                                    }
+                                                                    //console.log(document.getElementById('month').innerText)
+                                                                    // 指定图表的配置项和数据
+                                                                    var option = {
+                                                                        title: {
+                                                                            text: '今日民生',
+                                                                            subtext: '2018年'+document.getElementById('month1').innerText+'月'+document.getElementById('day1').innerText+'日'+' - '
+                                                                                +'2018年'+document.getElementById('month2').innerText+'月'+document.getElementById('day2').innerText+'日',
+                                                                            x: 'center'
+                                                                        },
+                                                                        tooltip: {
+                                                                            trigger: 'item',
+                                                                            formatter: "{a} <br/>{b} : {c} ({d}%)"
+                                                                        },
+                                                                        legend: {
+                                                                            orient: 'vertical',
+                                                                            left: 'left',
+                                                                            data: elments
+                                                                            // ['感谢', '建议', '其他', '求决', '咨询', '投诉']
+
+                                                                        },
+
+                                                                        color: ['#CD5C5C', '#00CED1', '#9ACD32', '#FFC0CB', '#cca3cc', '#f5deb3'],
+                                                                        stillShowZeroSum: false,
+                                                                        series: [
+                                                                            {
+                                                                                name: '问题性质',
+                                                                                type: 'pie',
+                                                                                radius: '55%',
+                                                                                center: ['50%', '60%'],
+                                                                                data: elments2,
+                                                                                // {#    [#}
+                                                                                // {#    { value: 335, name: '感谢' },#}
+                                                                                // {#    { value: 310, name: '建议' },#}
+                                                                                // {#    { value: 234, name: '其他' },#}
+                                                                                // {#    { value: 135, name: '求决' },#}
+                                                                                // {#    { value: 1548, name: '咨询' },#}
+                                                                                // {#    { value: 100, name: '投诉' }#}
+                                                                                // {#],#}
+                                                                                itemStyle: {
+                                                                                    emphasis: {
+                                                                                        shadowBlur: 10,
+                                                                                        shadowOffsetX: 0,
+                                                                                        shadowColor: 'rgba(128, 128, 128, 0.5)'
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        ]
+                                                                    };
+                                                                    // 使用刚指定的配置项和数据显示图表。
+                                                                    myChart.setOption(option);
+                                                                }
+                                                           //run();
+                                                                read();
+                                                                run();
+                                                                myFunction()
+                                                            </script>
+														</div><!--/.table-responsive-->
+													</div><!--/.item-->
+												</div><!--/.box-->
+											</div><!--/.col-->
+											<div class="col-sm-8">
+												<div class="box">
+													<div class="box-head">
+														<h2>结办情况</h2>
+													</div><!--/.box-head-->
+													<div class="item">
+														<div class="item-responsive ">
+{#															    <p hidden id="month1">{{ M1 }}</p>#}
+{#                                                                <p hidden id="day1">{{ D1 }}</p>#}
+{#                                                                <p hidden id="month2">{{ M2 }}</p>#}
+{#                                                                <p hidden id="day2">{{ D2 }}</p>#}
+                                                            <div hidden>
+{#                                                                 <p  id="demo">测试</p>#}
+                                                                <p  id="data2">{{ data2 }}</p>
+                                                                <div  id="div2">
+                                                                    <p>{{ data2 }}</p>
+                                                                </div>
+                                                            </div>
+
+                                                                <script>
+                                                                    var div = document.getElementById('data2');
+
+                                                                        if (div.innerText.indexOf("没有") != -1)
+                                                                        {
+                                                                            alert('没有该日期范围的数据');
+                                                                        }
+                                                                    function ajaxForm2() {
+                                                                        $.ajax({
+                                                                            url: "/chart4/refresh",   //对应flask中的路由
+                                                                            type: "POST", //请求方法
+                                                                            data: 'hello',   //传送的数据
+                                                                            success: function (data2) {
+                                                                                document.getElementById('div2').innerText = data2;
+                                                                               // console.log("kkk"+document.getElementById('div1').innerText)
+                                                                            }
+                                                                        })
+                                                                    }
+                                                                    function read2() {
+
+
+                                                                        var div = document.getElementById('data2');
+                                                                        //console.log('data'+div.innerHTML)
+                                                                        obj = JSON.parse(div.innerText);
+                                                                        document.getElementById("demo").innerText = obj;
+                                                                        //console.log(obj)
+                                                                    }
+                                                                     function myFunction2() {
+                                                                        setInterval(function () {
+                                                                            $(document).ready(function () {
+
+                                                                                ajaxForm2()
+
+                                                                                judge2()
+                                                                            });
+                                                                        }, 2000);
+                                                                    }
+
+                                                                    function judge2() {
+                                                                        if (document.getElementById('data2').innerText != document.getElementById('div2').innerText) {
+                                                                           // console.log('div1'+document.getElementById('div1').innerText)
+                                                                            document.getElementById('data2').innerText = $.trim(document.getElementById('div2').innerText);
+
+                                                                            read2()
+                                                                            run2()
+                                                                        }
+                                                                    }
+                                                                </script>
+                                                                <div class="chart" align="center">
+                                                                    <div id="pie_echarts2" style="width: 700px;height:500px;margin-top:50px;"></div>
+                                                                </div>
+
+
+                                                                <script>function run2() {
+                                                                    var div = document.getElementById('data2');
+
+
+                                                                    obj = JSON.parse(div.innerHTML);
+                                                                    //document.getElementById("demo").innerHTML = obj;
+
+                                                                    var elments = new Array();
+                                                                    var n = 0;
+                                                                    var sum1=0;
+                                                                    // documents.write(obj)
+                                                                    for (var i in obj[0][1]) {
+                                                                        var k = {};
+                                                                        //document.write(i)
+                                                                        k.value = obj[0][1][i];
+                                                                        sum1+=k.value;
+                                                                        k.name = i;
+                                                                        elments[n]=k;
+                                                                       // document.write(k);
+                                                                        n++;
+
+                                                                    }
+                                                                     var elments2 = new Array();
+                                                                    var n = 0;
+                                                                    var sum2=0;
+                                                                    // documents.write(obj)
+                                                                    if(obj[1]){
+                                                                        for (var i in obj[1][1]) {
+                                                                        var k = {};
+                                                                        //document.write(i)
+                                                                        k.value = obj[1][1][i];
+                                                                        sum2+=k.value;
+                                                                        k.name = i;
+                                                                        elments2[n]=k;
+                                                                       // document.write(k);
+                                                                        n++;
+
+                                                                    }
+                                                                    }
+
+                                                                    //document.getElementById("demo").innerHTML = elments;
+
+                                                                    // 基于准备好的dom，初始化echarts实例
+
+
+
+                                                                    var myChart = echarts.init(document.getElementById('pie_echarts2'));
+                                                                    // 指定图表的配置项和数据
+
+                                                                    var option = {
+                                                                        title: {
+                                                                                text: '今日民生',
+                                                                                 subtext: '2018年'+document.getElementById('month1').innerText+'月'+document.getElementById('day1').innerText+'日'+' - '
+                                                                                    +'2018年'+document.getElementById('month2').innerText+'月'+document.getElementById('day2').innerText+'日',
+                                                                                x: 'center'
+                                                                            },
+                                                                        tooltip: {
+                                                                            trigger: 'item',
+                                                                            formatter: "{a} <br/>{b}: {c} ({d}%)"
+                                                                        },
+                                                                        legend: {
+                                                                            orient: 'vertical',
+                                                                            x: 'left',
+                                                                            data: ['处置中', '超期结办', '按期结办', '邮件营销', '联盟广告', '视频广告', '百度', '谷歌', '必应', '其他']
+                                                                        },
+                                                                        series: [
+                                                                            {
+                                                                                name: '访问来源',
+                                                                                type: 'pie',
+                                                                                selectedMode: 'single',
+                                                                                radius: [0, '30%'],
+
+                                                                                label: {
+                                                                                    normal: {
+                                                                                        position: 'inner'
+                                                                                    }
+                                                                                },
+                                                                                labelLine: {
+                                                                                    normal: {
+                                                                                        show: false
+                                                                                    }
+                                                                                },
+                                                                                data: [
+                                                                                    { value: sum1, name: '按期结办' },
+                                                                                    { value: sum2, name: '超期结办' }
+                                                                                    //{ value: 1548, name: '按期结办' }
+                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                name: '已结办',
+                                                                                type: 'pie',
+                                                                                radius: ['40%', '55%'],
+                                                                                label: {
+                                                                                    normal: {
+                                                                                        formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
+                                                                                        backgroundColor: '#eee',
+                                                                                        borderColor: '#aaa',
+                                                                                        borderWidth: 1,
+                                                                                        borderRadius: 4,
+                                                                                        // shadowBlur:3,
+                                                                                        // shadowOffsetX: 2,
+                                                                                        // shadowOffsetY: 2,
+                                                                                        // shadowColor: '#999',
+                                                                                        // padding: [0, 7],
+                                                                                        rich: {
+                                                                                            a: {
+                                                                                                color: '#999',
+                                                                                                lineHeight: 22,
+                                                                                                align: 'center'
+                                                                                            },
+                                                                                            // abg: {
+                                                                                            //     backgroundColor: '#333',
+                                                                                            //     width: '100%',
+                                                                                            //     align: 'right',
+                                                                                            //     height: 22,
+                                                                                            //     borderRadius: [4, 4, 0, 0]
+                                                                                            // },
+                                                                                            hr: {
+                                                                                                borderColor: '#aaa',
+                                                                                                width: '100%',
+                                                                                                borderWidth: 0.5,
+                                                                                                height: 0
+                                                                                            },
+                                                                                            b: {
+                                                                                                fontSize: 16,
+                                                                                                lineHeight: 33
+                                                                                            },
+                                                                                            per: {
+                                                                                                color: '#eee',
+                                                                                                backgroundColor: '#334455',
+                                                                                                padding: [2, 4],
+                                                                                                borderRadius: 2
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                },
+                                                                                data:elments
+                                                                                {#    [#}
+                                                                                {#    { value: 335, name: '安全隐患' },#}
+                                                                                {#    { value: 310, name: '党纪政纪' },#}
+                                                                                {#    { value: 234, name: '党建群团' },#}
+                                                                                {#    { value: 135, name: '规土城建' },#}
+                                                                                {#    { value: 1048, name: '环保水务' },#}
+                                                                                {#    { value: 251, name: '交通运输' },#}
+                                                                                {#    { value: 147, name: '教育卫生' },#}
+                                                                                {#    { value: 102, name: '处置中' }#}
+                                                                                {#]#}
+                                                                            },
+                                                                            {
+                                                                                name: '未结办',
+                                                                                type: 'pie',
+                                                                                radius: ['60%', '75%'],
+                                                                                label: {
+                                                                                    normal: {
+                                                                                        formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
+                                                                                        backgroundColor: '#eee',
+                                                                                        borderColor: '#aaa',
+                                                                                        borderWidth: 1,
+                                                                                        borderRadius: 4,
+                                                                                        // shadowBlur:3,
+                                                                                        // shadowOffsetX: 2,
+                                                                                        // shadowOffsetY: 2,
+                                                                                        // shadowColor: '#999',
+                                                                                        // padding: [0, 7],
+                                                                                        rich: {
+                                                                                            a: {
+                                                                                                color: '#999',
+                                                                                                lineHeight: 22,
+                                                                                                align: 'center'
+                                                                                            },
+                                                                                            // abg: {
+                                                                                            //     backgroundColor: '#333',
+                                                                                            //     width: '100%',
+                                                                                            //     align: 'right',
+                                                                                            //     height: 22,
+                                                                                            //     borderRadius: [4, 4, 0, 0]
+                                                                                            // },
+                                                                                            hr: {
+                                                                                                borderColor: '#aaa',
+                                                                                                width: '100%',
+                                                                                                borderWidth: 0.5,
+                                                                                                height: 0
+                                                                                            },
+                                                                                            b: {
+                                                                                                fontSize: 16,
+                                                                                                lineHeight: 33
+                                                                                            },
+                                                                                            per: {
+                                                                                                color: '#eee',
+                                                                                                backgroundColor: '#334455',
+                                                                                                padding: [2, 4],
+                                                                                                borderRadius: 2
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                },
+                                                                                data:elments2
+                                                                                {#    [#}
+                                                                                {#    { value: 335, name: '安全隐患' },#}
+                                                                                {#    { value: 310, name: '党纪政纪' },#}
+                                                                                {#    { value: 234, name: '党建群团' },#}
+                                                                                {#    { value: 135, name: '规土城建' },#}
+                                                                                {#    { value: 1048, name: '环保水务' },#}
+                                                                                {#    { value: 251, name: '交通运输' },#}
+                                                                                {#    { value: 147, name: '教育卫生' },#}
+                                                                                {#    { value: 102, name: '处置中' }#}
+                                                                                {#]#}
+                                                                            },
+
+
+                                                                        ]
+                                                                    };
+                                                                    // 使用刚指定的配置项和数据显示图表。
+                                                                    myChart.setOption(option);}
+                                                                     read2();
+                                                                    run2();
+                                                                    myFunction2()
+                                                                </script>
+														</div>
+													</div>
+												</div>
+											</div>
+                                            <br>
+											 <div class="time" align="center">
+                                                <form method="post">
+                                                     <input type="text" class="form-control" name="daterange" style="width:20%" value="10/29/2018 - 10/29/2018" />
+                                                        <script>
+                                                        $(function() {
+                                                          $('input[name="daterange"]').daterangepicker({
+                                                            opens: 'left'
+                                                          }, function(start, end, label) {
+                                                            console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+                                                          });
+                                                        });
+                                                        </script>
+                                                    <br>
+                                                    <div align="center">
+                                                        <button class='button btn btn-primary'>查询</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <br>
+										</div>
+								</div>
+							</div>
+							</div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+
+    	<!-- END WRAPPER -->
+
+
+
+		<!--chartist.min.js-->
+        <script src="../static/assets/chartist/js/chartist.min.js"></script>
+        <script src="../static/assets/chartist/js/chartist-tooltip-plugin.js"></script>
+        <script src="../static/assets/chartist/js/chartist-custom.js"></script>
+
+        <!--bootstrap.min.js-->
+        <script src="../static/assets/js/bootstrap.min.js"></script>
+
+		<!--jquery.slimscroll.min.js-->
+        <script src="../static/assets/js/jquery.slimscroll.min.js"></script>
+
+		<!--feather.min.js-->
+        <script src="../static/assets/js/feather.min.js"></script>
+
+		<!-- DataMaps Plugin Js -->
+        <script src="../static/assets/js/d3.min.js"></script>
+        <script src="../static/assets/js/topojson.js"></script>
+        <script src="../static/assets/js/datamaps.world.min.js"></script>
+
+        <!--fontawesome-all.min.js-->
+        <script src="../static/assets/js/fontawesome-all.min.js"></script>
+
+        <!--Custom JS-->
+        <script src="../static/assets/js/custom.js"></script>
+</body>
+
+</html>

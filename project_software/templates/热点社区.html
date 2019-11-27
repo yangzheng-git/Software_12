@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- META DATA -->
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+	<!-- TITLE OF SITE -->
+	<title>热点社区</title>
+	<!-- favicon -->
+	<!--<link rel="shortcat icon" href="/favicon.ico" type="image/x-icon">-->
+
+	<!--font-awesome.min.css-->
+	<link rel="stylesheet" href="../static/assets/css/font-awesome.min.css">
+
+	<!--linear icon css-->
+	<link rel="stylesheet" href="../static/assets/css/icon-font.min.css">
+
+	<!--chartist.min.css-->
+	<link rel="stylesheet" href="../static/assets/chartist/css/chartist.min.css">
+
+	<!--bootstrap.min.css-->
+	<link rel="stylesheet" href="../static/assets/css/bootstrap.min.css">
+
+	<!--style.css-->
+	<link rel="stylesheet" href="../static/assets/css/style.css">
+
+	<!--responsive.css-->
+	<link rel="stylesheet" href="../static/assets/css/responsive.css">
+
+    <link rel="stylesheet" type="text/css" href="../static/assets/css/daterangepicker.css" />
+	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]-->
+	<style>
+        #map{
+            width: 800px;
+            height: 600px;
+            border: 1px solid red;
+        }
+    </style>
+	<script src="../static/assets/js/html5shiv.min.js"></script>
+	<script src="../static/assets/js/respond.min.js"></script>
+    <script src="../static/plugin/echarts-4.4.0/dist/echarts.min.js"></script>
+    <script type="text/javascript" src="../static/assets/js/refresh/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/assets/js/moment.min.js"></script>
+    <script type="text/javascript" src="../static/assets/js/daterangepicker.min.js"></script>
+</head>
+<body>
+    <div hidden id="bubbles"></div>
+    	<!-- wrapper -->
+	<div id="wrapper">
+
+		<!-- navbar -->
+		<nav class="navbar navbar-default navbar-fixed-top">
+			<div class="brand" style="width:200px">
+				<a href="/display" style="font-size:20px">
+					{{current.role}}<span>{{current.name}}</span>
+				</a>
+			</div><!--/.brand -->
+			<div class="container-fluid">
+				<span class="navbar-left">
+					<br>
+					<h1>&nbsp;政府大数据实时治理系统</h1>
+				</span><!--/form -->
+				<div class="navbar-menu">
+					<ul class="nav navbar-nav navbar-right">
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle icon-menu" data-toggle="dropdown">
+								<i data-feather="bell"></i>
+								<span class="badge badge-bg-1">{{ dbnum }}</span>
+							</a>
+						</li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+								<img src="{{current.real_avatar}}" class="img-circle" alt="parson-img" height="40px">
+								<i class="icon-submenu fa fa-angle-down"></i>
+							</a>
+							<ul class="dropdown-menu">
+								<li><a href="/profile"><i class="lnr lnr-user"></i> <span>个人信息</span></a></li>
+								<li><a href="/"><i class="lnr lnr-exit"></i> <span>退出登录</span></a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div><!--/.container-fluid -->
+
+		</nav><!--/nav -->
+		<!-- END NAVBAR -->
+
+		<!-- LEFT SIDEBAR -->
+		<div id="sidebar-nav" class="sidebar" style="width:200px">
+			<div class="sidebar-scroll">
+				<nav>
+					<ul class="nav">
+
+						<li>
+							<a href="/display" >
+								<i data-feather="home"></i> <span>主页</span>
+							</a>
+						</li>
+
+						<li>
+							<a href="/chart1">
+								<i data-feather="pie-chart"></i> <span>问题情况</span>
+							</a>
+						</li>
+
+						<li>
+							<a href="/chart2">
+								<i data-feather="bar-chart"></i> <span>街道事件</span>
+							</a>
+						</li>
+
+						<li class="active">
+							<a href="/chart3">
+								<i data-feather="map-pin"></i> <span>热点社区</span>
+							</a>
+						</li>
+
+						{% if current.role == "管理员" %}
+							<li>
+								<a href="/manage">
+									<i data-feather="user-check"></i> <span>数据和账号管理</span>
+								</a>
+							</li>
+						{% endif %}
+
+						<li>
+							<a href="/abnormal">
+								<i data-feather="bell"></i> <span>未结办事件</span>
+							</a>
+						</li>
+					</ul>
+				</nav>
+			</div>
+
+		</div>
+		<!-- END LEFT SIDEBAR -->
+
+		<!-- MAIN -->
+		<div class="main">
+
+			<!-- MAIN CONTENT -->
+			<div class="main-content">
+				<div class="container-fluid">
+
+					<div class="main-content-head">
+						<h2>你好 {{current.role}}{{current.name}}!</h2>
+						<p>欢迎使用政府大数据实时治理系统</p>
+					</div>
+
+                    <div class="profile-content">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="box">
+                                    <div class="item">
+                                        <div class="item-responsive ">
+                                            <br>
+                                            <h2 align="center" style="font-size:25px">异常事件报警</h2>
+                                            <p hidden id="abdata">{{ abdata }}</p>
+
+                                            <marquee  direction="up"  behavior="scroll"  scrollamount="5"  loop="-1"  bgcolor="white"  hspace="100"   vspace="50"  height="100"></marquee>
+
+                                            <script>
+                                                    var div = document.getElementById('abdata');
+                                                    obj = JSON.parse(div.innerHTML);
+                                                    var elments = new Array();//图例
+                                                    for(var i=0;i<obj.length;i++)
+                                                    {
+                                                        elments[i]=obj[i]
+                                                    }
+
+                                                     for(var i=0;i<obj.length;i++) {
+                                                         marquee = document.getElementsByTagName('marquee')[0];
+                                                         str = marquee.innerHTML;
+                                                         str += "<p color=\"black\">"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\"><span>" + "  " + elments[i].time +" "+ "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#66CCCC\"  size=\"5\"><span>" + elments[i].street + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\">" + "的" + "</font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#00FFFF\"  size=\"5\"><span> " + elments[i].community + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\">" + "从" + "</font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#990099\"  size=\"5\"><span> " + elments[i].source + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\">" + "接到" + "</font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#CC0000\"  size=\"5\"><span> " + elments[i].sub_type + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#0000CC\"  size=\"5\"><span> " + elments[i].property + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\">" + "，请" + "</font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#CC00CC\"  size=\"5\"><span> " + elments[i].unity_name + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\">" + "尽快前往处理." + "</font>"
+                                                         str += "<br></p>"
+                                                         marquee.innerHTML = str;
+                                                     }
+                                            </script>
+                                        </div><!--/.table-responsive-->
+                                    </div><!--/.item-->
+                                </div><!--/.box-->
+                            </div><!--/.col-->
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="box">
+                                    <div class="box-head">
+                                        <h2>热点社区</h2>
+                                    </div><!--/.box-head-->
+                                    <div class="item">
+                                        <div class="item-responsive ">
+                                            <p hidden id="month1">{{ M1 }}</p>
+                                            <p hidden id="day1">{{ D1 }}</p>
+                                            <p hidden id="month2">{{ M2 }}</p>
+                                            <p hidden id="day2">{{ D2 }}</p>
+                                        <p  hidden id="demo">测试</p>
+                                            <p  hidden id="data">{{ data }}</p>
+                                        <div align="center">
+                                            <div  id="map"></div>
+                                        </div>
+                                        <div hidden  id="div1">
+                                                <p>{{ data }}</p>
+                                        </div>
+
+                                            <br>
+                                        <div class="time" align="center" style="right:5px;top:650px">
+                                            <form method="post">
+                                                 <input type="text" class="form-control" name="daterange" style="width:20%" value="10/29/2018 - 10/29/2018" />
+                                                        <script>
+                                                        $(function() {
+                                                          $('input[name="daterange"]').daterangepicker({
+                                                            opens: 'left'
+                                                          }, function(start, end, label) {
+                                                            console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+                                                          });
+                                                        });
+                                                        </script>
+                                                    <br>
+                                                    <div align="center">
+                                                        <button class='button btn btn-primary'>查询</button>
+                                                    </div>
+                                            </form>
+
+                                        </div>
+
+                                        <script>
+                                                function ajaxForm() {
+                                                    $.ajax({
+                                                        url: "/chart3/refresh",   //对应flask中的路由
+                                                        type: "POST", //请求方法
+                                                        data: 'hello',   //传送的数据
+                                                        success: function (data1) {
+                                                            document.getElementById('div1').innerText = data1;
+                                                        }
+                                                    })
+                                                }
+                                                function read() {
+
+
+                                                    var div = document.getElementById('data');
+                                                    obj = JSON.parse(div.innerHTML);
+                                                    document.getElementById("demo").innerHTML = obj;
+                                                    console.log(obj)
+                                                }
+                                                 function myFunction() {
+                                                    setInterval(function () {
+                                                        $(document).ready(function () {
+
+                                                            ajaxForm()
+
+                                                            judge()
+                                                        });
+                                                    }, 2000);
+                                                }
+
+                                                function judge() {
+                                                    if (document.getElementById('data').innerText !== document.getElementById('div1').innerText) {
+                                                        document.getElementById('data').innerText = $.trim(document.getElementById('div1').innerText);
+                                                        console.log(document.getElementById('data').innerText)
+                                                        read()
+                                                        run()
+                                                    }
+                                                }
+
+
+                                            </script>
+
+{#                                        <div>#}
+{#                                            <br>#}
+{#                                            <button class='button'>niho</button>#}
+{#                                        </div>#}
+                                         <script>
+                                             var div = document.getElementById('data');
+
+                                                    if (div.innerText.indexOf("没有") != -1)
+                                                    {
+                                                        alert('没有该日期范围的数据');
+                                                    }
+                                             function run() {
+                                                var div = document.getElementById('data');
+                                                // document.write("nihao")
+
+                                                obj = JSON.parse(div.innerHTML);
+                                                document.getElementById("demo").innerHTML = obj;
+                                               // document.write(obj[1][0])
+                                             var elments2 = new Array();
+                                             var _max=0;
+
+                                            for(var i=0;i<obj.length;i++)
+                                                {
+                                                    var k={};
+                                                    k.value=obj[i][1];
+                                                    if(_max<k.value){
+                                                        _max=k.value;
+                                                    }
+                                                    k.name=obj[i][0];
+                                                    elments2[i]=k;
+                                                }
+                                            {#document.write(_max)#}
+
+
+                                            var geoCoordMap = { //这里打点的坐标信息，虚拟信息
+                                                '碧岭社区': [114.295663,22.67342],
+                                                '和平社区': [114.355104,22.697106],
+                                                '江岭社区': [114.362596,22.69202],
+                                                '金龟社区': [114.406461,22.663744],
+                                                '金沙社区': [114.406008,22.75079],
+                                                '坑梓社区': [114.390013,22.753031],
+                                                '老坑社区': [114.369312,22.734866],
+                                                '六和社区': [114.349914,22.707919],
+                                                '六联社区': [114.332971,22.795219],
+                                                '龙田社区': [114.372841,22.753346],
+                                                '马峦社区': [114.338203,22.644538],
+                                                '南布社区': [114.375607,22.70534],
+                                                '坪环社区': [114.35474,22.688096],
+                                                '坪山社区': [114.35474,22.688096],
+                                                '沙湖社区': [114.326552,22.67909],
+                                                '沙坣社区': [114.377888,22.690889],
+                                                '沙田社区': [114.403344,22.761827],
+                                                '石井社区': [114.390978,22.697625],
+                                                '汤坑社区': [114.331079,22.678805],
+                                                '田头社区': [114.410837,22.697197],
+                                                '田心社区': [114.421943,22.700351],
+                                                '秀新社区': [114.381223,22.746873],
+                                                '竹坑社区': [114.395074,22.715773]
+                                            };
+                                            var locValue =elments2;
+                                            {#    [  //这里放点对应的值#}
+                                            {#    {name:"碧岭社区",value:"2"},#}
+                                            {#	{name:"和平社区",value:"50"},#}
+                                            {#    {name:"江岭社区",value:"20"},#}
+                                            {#    {name:"金龟社区",value:"90"},#}
+                                            {#    {name:"金沙社区",value:"170"},#}
+                                            {#    {name:"坑梓社区",value:"190"},#}
+                                            {#    {name:"老坑社区",value:"160"},#}
+                                            {#    {name:"六和社区",value:"140"},#}
+                                            {#    {name:"龙田社区",value:"130"},#}
+                                            {#    {name:"马峦社区",value:"110"},#}
+                                            {#    {name:"南布社区",value:"105"},#}
+                                            {#    {name:"坪环社区",value:"142"},#}
+                                            {#    {name:"坪山社区",value:"80"},#}
+                                            {#    {name:"沙湖社区",value:"184"},#}
+                                            {#    {name:"沙坣社区",value:"155"},#}
+                                            {#    {name:"沙田社区",value:"130"},#}
+                                            {#    {name:"石井社区",value:"140"},#}
+                                            {# 	{name:"汤坑社区",value:"184"},#}
+                                            {#    {name:"田头社区",value:"155"},#}
+                                            {#    {name:"田心社区",value:"130"},#}
+                                            {#    {name:"秀新社区",value:"140"},#}
+                                            {#	{name:"竹坑社区",value:"140"}#}
+                                            {#];#}
+                                            var convertData = function (geoCoordMap,data) {
+                                                var res = [];
+                                                for (var i = 0; i < data.length; i++) {
+                                                    var geoCoord = geoCoordMap[data[i].name];
+                                                    if (geoCoord) {
+                                                        res.push({
+                                                            name: data[i].name,
+                                                            value: geoCoord.concat(data[i].value)
+                                                        });
+                                                    }
+                                                }
+                                                return res;
+                                            };
+
+                                            // JSON
+                                            $.getJSON('../static/plugin/echarts-4.4.0/map/json/province/shenzhen.json', function (data) {
+                                                echarts.registerMap('shenzhen', data);
+                                                var chart = echarts.init(document.getElementById('map'));
+                                                var option = {
+                                                    title: {
+                                                            text: '今日民生',
+                                                            subtext: '2018年'+document.getElementById('month1').innerText+'月'+document.getElementById('day1').innerText+'日'+' - '
+                                                                +'2018年'+document.getElementById('month2').innerText+'月'+document.getElementById('day2').innerText+'日',                    x: 'center'
+                                                        },
+                                                    backgroundColor: '#404a59',
+                                                    title: {
+                                                        text: '热点社区',
+                                                        x:'center',
+                                                        textStyle: {
+                                                            color: '#fff'
+                                                        }
+                                                    },
+                                                    tooltip: {
+                                                        trigger: 'item',
+                                                        formatter: function (params) {
+                                                            return params.name + ' : ' + params.value[2];
+                                                        },
+                                                        extraCssText:"height:20px;"
+                                                    },
+                                                    legend: {
+                                                        orient: 'vertical',
+                                                        y: 'bottom',
+                                                        x:'right',
+                                                        data:['民生事件数量'],
+                                                        textStyle: {
+                                                            color: '#fff'
+                                                        }
+                                                    },
+                                                    visualMap: {
+                                                        min: 0,
+                                                        max: _max,      //记得改上限
+                                                        calculable: true,
+                                                        inRange: {
+                                                            color: ['#50a3ba', '#eac736', '#d94e5d']
+                                                        },
+                                                        textStyle: {
+                                                            color: '#fff'
+                                                        }
+                                                    },
+                                                    geo: {
+                                                        map: 'shenzhen',
+                                                        roam:true,
+                                                        aspectScale:1,
+                                                        label: {
+                                                            emphasis: {
+                                                                show: true,
+                                                                color:"#fff"
+
+                                                            }
+                                                        },
+                                                        itemStyle: {
+                                                            normal: {
+                                                                areaColor: '#323c48',
+                                                                borderColor: '#111'
+                                                            },
+                                                            emphasis: {
+                                                                areaColor: '#2a333d'
+                                                            }
+                                                        }
+                                                    },
+                                                    series: [
+                                                        {
+                                                            name: '民生事件数量',
+                                                            type: 'effectScatter',
+                                                            coordinateSystem: 'geo',
+                                                            data: convertData(geoCoordMap,locValue).slice(0,24),
+                                                            symbolSize: function (val) {
+                                                                return val[2] / 10;
+                                                            },
+                                                            showEffectOn: 'emphasis',
+                                                            rippleEffect: {
+                                                                brushType: 'stroke'
+                                                            },
+                                                            hoverAnimation: true,
+                                                            label: {
+                                                                normal: {
+                                                                    formatter: '{b}',
+                                                                    position: 'right',
+                                                                    show: true
+                                                                }
+                                                            },
+                                                            itemStyle: {
+                                                                normal: {
+                                                                    color: '#f4e925',
+                                                                    shadowBlur: 10,
+                                                                    shadowColor: '#333'
+                                                                }
+                                                            },
+                                                            zlevel: 1
+                                                        },
+                                                    ]
+                                                };
+
+                                                chart.setOption(option);
+                                            });}
+                                            read();
+                                             run();
+                                             myFunction()
+
+
+                                        </script>
+                                            <div class="time" align="center" style="right:5px;top:650px;position:relative">
+                                         <form method="post">
+                                                 <input type="text" name="daterange" value="10/29/2018 - 10/29/2018" />
+                                                    <script>
+                                                    $(function() {
+                                                      $('input[name="daterange"]').daterangepicker({
+                                                        opens: 'left'
+                                                      }, function(start, end, label) {
+                                                        console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+                                                      });
+                                                    });
+                                                    </script>
+                                             <br>
+                                                <div align="center">
+                                                    <button class='button'>查询</button>
+                                                </div>
+                                             </form>
+                                        </div>
+                                        </div><!--/.table-responsive-->
+                                    </div><!--/.item-->
+                                </div><!--/.box-->
+                            </div><!--/.col-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+
+    	<!-- END WRAPPER -->
+
+
+
+		<!--chartist.min.js-->
+        <script src="../static/assets/chartist/js/chartist.min.js"></script>
+        <script src="../static/assets/chartist/js/chartist-tooltip-plugin.js"></script>
+        <script src="../static/assets/chartist/js/chartist-custom.js"></script>
+
+        <!--bootstrap.min.js-->
+        <script src="../static/assets/js/bootstrap.min.js"></script>
+
+		<!--jquery.slimscroll.min.js-->
+        <script src="../static/assets/js/jquery.slimscroll.min.js"></script>
+
+		<!--feather.min.js-->
+        <script src="../static/assets/js/feather.min.js"></script>
+
+		<!-- DataMaps Plugin Js -->
+        <script src="../static/assets/js/d3.min.js"></script>
+        <script src="../static/assets/js/topojson.js"></script>
+        <script src="../static/assets/js/datamaps.world.min.js"></script>
+
+        <!--fontawesome-all.min.js-->
+        <script src="../static/assets/js/fontawesome-all.min.js"></script>
+
+        <!--Custom JS-->
+        <script src="../static/assets/js/custom.js"></script>
+</body>
+</html>

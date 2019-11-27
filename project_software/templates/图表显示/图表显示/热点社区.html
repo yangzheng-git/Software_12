@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+    <title>echarts-map</title>
+    <link rel="stylesheet" href="plugin/layui/css/layui.css"/>
+    <script src="plugin/layui/layui.js"></script>
+    <script src="plugin/jquery/jquery.min.js"></script>
+    <!-- 我把echarts.js改名字了，以便区分其他版本 -->
+    <script src="plugin/echarts-4.4.0/dist/echarts.js"></script>
+    <script src="plugin/echarts-4.4.0/map/js/china.js"></script>
+</head>
+<body>
+    <div class="model">
+        <div class="panel-body">
+            <div id="map" style="width:80%;height: 500px;float: left">
+                <!-- 这边是将要存放的地图画布 -->
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var layer;
+        
+        function map() {
+            var map = echarts.init(document.getElementById('map'));
+            
+            //（2）引入data数据
+            var data = [
+                {name: '海门', value: 9},
+                {name: '鄂尔多斯', value: 12},
+                {name: '招远', value: 12},
+                {name: '舟山', value: 12},
+                {name: '齐齐哈尔', value: 14},
+                {name: '盐城', value: 15},
+                {name: '赤峰', value: 16},
+                {name: '青岛', value: 18},
+                {name: '乳山', value: 18}
+            ]
+            
+            $.get('plugin/echarts/map/json/china.json',function(chinaJson){
+                echarts.registerMap('china', chinaJson); // 注册地图
+                
+                //（3）引入城市坐标
+                var geoCoordMap = {
+                    '海门':[121.15,31.89],
+                    '鄂尔多斯':[109.781327,39.608266],
+                    '招远':[120.38,37.35],
+                    '舟山':[122.207216,29.985295],
+                    '齐齐哈尔':[123.97,47.33],
+                    '盐城':[120.13,33.38],
+                    '赤峰':[118.87,42.28],
+                    '青岛':[120.33,36.07],
+                    '乳山':[121.52,36.89]
+                }
+                
+                //（4）将数据和城市坐标对应上
+                var convertData = function (data) {
+                    var res = [];
+                    for (var i = 0; i < data.length; i++) {
+                        var geoCoord = geoCoordMap[data[i].name];
+                        if (geoCoord) {
+                            res.push({
+                                name: data[i].name,
+                                value: geoCoord.concat(data[i].value)
+                            });
+                        }
+                    }
+                    return res;
+                };
+            
+                var option = {
+                    geo: {
+                          
+                      },
+                      //（1）series 的类型为散点图 scatter
+                    series: [
+                        {
+                            name: 'pm2.5',            // series名称
+                            type: 'scatter',          // series图表类型
+                            coordinateSystem: 'geo',  // series坐标系类型
+                            data: convertData(data),  // series数据内容
+                            //控制显示文本
+                            label: {
+                                normal: {
+                                    show: false
+                                },
+                                emphasis: {
+                                    show: true
+                                }
+                            },
+                            //series样式
+                            itemStyle: {
+                                normal: {
+                                    color: '#ddb926'
+                                }
+                            }
+                        }
+                    ]
+                };
+                map.setOption(option);
+            })
+        }
+        
+        layui.use(['element', 'layer'], function() {
+            var element = layui.element();
+            layer = layui.layer;
+            $(document).ready(function () {
+                map();
+            });
+        });
+    </script>
+</body>

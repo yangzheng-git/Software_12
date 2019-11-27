@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="plugin/echarts-4.4.0/dist/echarts.min.js"></script>
+</head>
+
+<body>
+    <div id="bar_echarts" style="width: 800px;height:400px;"></div>
+    <script>
+        var myChart = echarts.init(document.getElementById('bar_echarts'));
+        var option = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                    type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                }
+            },
+            legend: {                     //图例
+                data: ['饲养宠物家禽扰民',
+                       '行道树倒压占路',
+                       '积存垃圾渣土',
+                       '城市管理',
+                       '道路破损',
+                       '店外经营',
+                       '工业红线内噪声',
+                       '下水井盖',
+                       '公共交通管理',
+                       '无照经营游商'
+                       ],
+                orient: 'vertical',       //垂直显示
+                y: 'center',              //沿Y轴居中
+                x: 'right',                //居右显示
+                align: 'left'
+            },
+            grid: {
+                left: '5%',
+                right: '25%',
+                bottom: '3%',
+                padding: 50,
+                containLabel: true
+            },
+            xAxis: [                      //横坐标为街道名称
+                {
+                    type: 'category',
+                    data: ['碧岭街道', '坑梓街道', '龙田街道', '马峦街道', '坪山街道', '石井街道']
+                }
+            ],
+            yAxis: [                      //纵坐标为事件数量的值
+                {
+                    type: 'value'
+                }
+            ],
+            series: [                     //各类在各个街道的事件数量
+                {
+                    name: '饲养宠物家禽扰民',
+                    type: 'bar',
+                    stack: '大类名称',
+                    data: [120, 132, 101, 134, 90, 230]
+                },
+                {
+                    name: '行道树倒压占路',
+                    type: 'bar',
+                    stack: '大类名称',
+                    data: [220, 182, 191, 234, 290, 330]
+                },
+                {
+                    name: '积存垃圾渣土',
+                    type: 'bar',
+                    stack: '大类名称',
+                    data: [150, 232, 201, 154, 190, 330]
+                },
+                {
+                    name: '城市管理',
+                    type: 'bar',
+                    stack: '大类名称',
+                    data: [120, 132, 101, 134, 90, 230]
+                },
+                {
+                    name: '道路破损',
+                    type: 'bar',
+                    stack: '大类名称',
+                    data: [120, 132, 101, 134, 90, 230]
+                },
+                {
+                    name: '店外经营',
+                    type: 'bar',
+                    stack: '大类名称',
+                    data: [120, 132, 101, 134, 90, 230]
+                },
+                {
+                    name: '工业红线内噪声',
+                    type: 'bar',
+                    stack: '大类名称',
+                    data: [120, 132, 101, 134, 90, 230]
+                },
+                {
+                    name: '下水井盖',
+                    type: 'bar',
+                    stack: '大类名称',
+                    data: [120, 132, 101, 134, 90, 230]
+                },
+                {
+                    name: '公共交通管理',
+                    type: 'bar',
+                    stack: '大类名称',
+                    data: [120, 132, 101, 134, 90, 230]
+                },
+                {
+                    name: '无照经营游商',
+                    type: 'bar',
+                    stack: '大类名称',
+                    data: [120, 132, 101, 134, 90, 230]
+                }
+            ]
+        };
+        myChart.setOption(option);
+    </script>
+</body>
+
+</html>

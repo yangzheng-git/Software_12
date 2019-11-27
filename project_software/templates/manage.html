@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <!-- META DATA -->
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+        <!-- TITLE OF SITE -->
+        <title>账号管理</title>
+        <!-- favicon -->
+		<!--<link rel="shortcat icon" href="/favicon.ico" type="image/x-icon">-->
+
+        <!--font-awesome.min.css-->
+		<link rel="stylesheet" href="../static/assets/css/font-awesome.min.css">
+
+        <!--linear icon css-->
+		<link rel="stylesheet" href="../static/assets/css/icon-font.min.css">
+
+		<!--chartist.min.css-->
+        <link rel="stylesheet" href="../static/assets/chartist/css/chartist.min.css">
+
+        <!--bootstrap.min.css-->
+        <link rel="stylesheet" href="../static/assets/css/bootstrap.min.css">
+
+        <!--style.css-->
+        <link rel="stylesheet" href="../static/assets/css/style.css">
+
+        <!--responsive.css-->
+        <link rel="stylesheet" href="../static/assets/css/responsive.css">
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]-->
+        <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+        <script src="../static/assets/js/html5shiv.min.js"></script>
+	    <script src="../static/assets/js/respond.min.js"></script>
+        <![endif]-->
+
+    </head>
+
+    <body>
+    <div hidden id="bubbles"></div>
+    	<!-- wrapper -->
+	<div id="wrapper">
+
+		<!-- navbar -->
+		<nav class="navbar navbar-default navbar-fixed-top">
+			<div class="brand" style="width:200px">
+				<a href="/display" style="font-size:20px">
+					{{current.role}}<span>{{current.name}}</span>
+				</a>
+			</div><!--/.brand -->
+			<div class="container-fluid">
+				<span class="navbar-left">
+					<br>
+					<h1>&nbsp;政府大数据实时治理系统</h1>
+				</span><!--/form -->
+				<div class="navbar-menu">
+					<ul class="nav navbar-nav navbar-right">
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle icon-menu" data-toggle="dropdown">
+								<i data-feather="bell"></i>
+								<span class="badge badge-bg-1">{{ dbnum }}</span>
+							</a>
+						</li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+								<img src="{{current.real_avatar}}" class="img-circle" alt="parson-img" height="40px">
+								<i class="icon-submenu fa fa-angle-down"></i>
+							</a>
+							<ul class="dropdown-menu">
+								<li><a href="/profile"><i class="lnr lnr-user"></i> <span>个人信息</span></a></li>
+								<li><a href="/"><i class="lnr lnr-exit"></i> <span>退出登录</span></a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div><!--/.container-fluid -->
+
+		</nav><!--/nav -->
+		<!-- END NAVBAR -->
+
+		<!-- LEFT SIDEBAR -->
+		<div id="sidebar-nav" class="sidebar" style="width:200px">
+			<div class="sidebar-scroll">
+				<nav>
+					<ul class="nav">
+
+						<li>
+							<a href="/display" >
+								<i data-feather="home"></i> <span>主页</span>
+							</a>
+						</li>
+
+						<li>
+							<a href="/chart1">
+								<i data-feather="pie-chart"></i> <span>问题情况</span>
+							</a>
+						</li>
+
+						<li>
+							<a href="/chart2">
+								<i data-feather="bar-chart"></i> <span>街道事件</span>
+							</a>
+						</li>
+
+						<li>
+							<a href="/chart3">
+								<i data-feather="map-pin"></i> <span>热点社区</span>
+							</a>
+						</li>
+
+						{% if current.role == "管理员" %}
+							<li class="active">
+								<a href="/manage" >
+									<i data-feather="user-check"></i> <span>数据和账号管理</span>
+								</a>
+							</li>
+						{% endif %}
+
+						<li>
+							<a href="/abnormal">
+								<i data-feather="bell"></i> <span>未结办事件</span>
+							</a>
+						</li>
+					</ul>
+				</nav>
+			</div>
+
+		</div>
+		<!-- END LEFT SIDEBAR -->
+
+		<!-- MAIN -->
+		<div class="main">
+
+			<!-- MAIN CONTENT -->
+			<div class="main-content">
+				<div class="container-fluid">
+
+					<div class="main-content-head">
+						<h2>你好 {{current.role}}{{current.name}}!</h2>
+						<p>欢迎使用政府大数据实时治理系统</p>
+					</div>
+
+                    <div class="profile-content">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="box">
+                                    <div class="item">
+                                        <div class="item-responsive ">
+                                            <br>
+                                            <h2 align="center" style="font-size:25px">异常事件报警</h2>
+                                            <p hidden id="data">{{ abdata }}</p>
+
+                                            <marquee  direction="up"  behavior="scroll"  scrollamount="5"  loop="-1"  bgcolor="white"  hspace="100"   vspace="50"  height="100"></marquee>
+
+                                            <script>
+                                                    var div = document.getElementById('data');
+                                                    obj = JSON.parse(div.innerHTML);
+                                                    var elments = new Array();//图例
+                                                    for(var i=0;i<obj.length;i++)
+                                                    {
+                                                        elments[i]=obj[i]
+                                                    }
+
+                                                     for(var i=0;i<obj.length;i++) {
+                                                         marquee = document.getElementsByTagName('marquee')[0];
+                                                         str = marquee.innerHTML;
+                                                         str += "<p color=\"black\">"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\"><span>" + "  " + elments[i].time +" "+ "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#66CCCC\"  size=\"5\"><span>" + elments[i].street + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\">" + "的" + "</font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#00FFFF\"  size=\"5\"><span> " + elments[i].community + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\">" + "从" + "</font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#990099\"  size=\"5\"><span> " + elments[i].source + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\">" + "接到" + "</font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#CC0000\"  size=\"5\"><span> " + elments[i].sub_type + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#0000CC\"  size=\"5\"><span> " + elments[i].property + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\">" + "，请" + "</font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#CC00CC\"  size=\"5\"><span> " + elments[i].unity_name + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\">" + "尽快前往处理." + "</font>"
+                                                         str += "<br></p>"
+                                                         marquee.innerHTML = str;
+                                                     }
+                                            </script>
+                                        </div><!--/.table-responsive-->
+                                    </div><!--/.item-->
+                                </div><!--/.box-->
+                            </div><!--/.col-->
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="box">
+                                    <div class="box-head">
+                                        <div class="icon-box">
+                                            <span class="icon-bg icon-bg-1">
+                                                <img src="../static/assets/images/user-icon.png" alt="user-icon">
+                                            </span>
+                                            <h2>审核注册申请</h2>
+                                        </div><!--/.icon-box-->
+                                    </div><!--/.box-head-->
+                                    <div class="item">
+                                        <div class="item-responsive ">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>账号编号</th>
+                                                        <th>姓名</th>
+                                                        <th>部门</th>
+                                                        <th>用户名</th>
+                                                    </tr>
+                                                </thead><!--/thead-->
+                                                <tbody>
+                                                    {% for i in userno %}
+                                                    <tr>
+                                                        <td>{{ i.id }}</td>
+                                                        <td>{{ i.name }}</td>
+                                                        <td>{{ i.department }}</td>
+                                                        <td>{{ i.username }}</td>
+                                                        <td><span class="item-status delivered"><button class='button btn btn-primary' onclick="window.location.href='{{url_for('agree',name=i.name)}}'">同意</button></span></td>
+                                                        <td><span class="item-status cancel"><button class='button btn btn-primary' onclick="window.location.href='{{url_for('disagree',name=i.name)}}'">拒绝</button></span></td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody><!--/tbody-->
+                                            </table><!--/.table-->
+                                        </div><!--/.table-responsive-->
+                                    </div><!--/.item-->
+                                </div><!--/.box-->
+                            </div><!--/.col-->
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="box">
+                                    <div class="box-head">
+                                        <div class="icon-box">
+                                            <span class="icon-bg icon-bg-1">
+                                                <img src="../static/assets/images/plane-icon.png" alt="user-icon">
+                                            </span>
+                                            <h2>修改用户权限</h2>
+                                        </div><!--/.icon-box-->
+                                    </div><!--/.box-head-->
+                                    <div class="item">
+                                        <div class="item-responsive ">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>账号编号</th>
+                                                        <th>姓名</th>
+                                                        <th>部门</th>
+                                                        <th>用户名</th>
+                                                        <th>权限</th>
+                                                    </tr>
+                                                </thead><!--/thead-->
+                                                <tbody>
+                                                    {% for i in userrole %}
+                                                    <tr>
+                                                        <td>{{ i.id }}</td>
+                                                        <td>{{ i.name }}</td>
+                                                        <td>{{ i.department }}</td>
+                                                        <td>{{ i.username }}</td>
+                                                        <td>{{ i.role }}</td>
+                                                        <td><span class="item-status delivered"><button class='button btn btn-primary' onclick="window.location.href='{{url_for('levelchange',name=i.name)}}'">提升为管理员</button></span></td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody><!--/tbody-->
+                                            </table><!--/.table-->
+                                        </div><!--/.table-responsive-->
+                                    </div><!--/.item-->
+                                </div><!--/.box-->
+                            </div><!--/.col-->
+                        </div>
+
+                        <div class="row" align="center">
+                            <button id="refresh" class='btn btn-primary' onclick="myFunction()" >读取今日数据</button>
+                            <br>
+                        {#    <button id="init" class='btn btn-primary' >初始化数据</button>#}
+                        {#重新载入除了十月三十日的数据#}
+                            <script>
+                                $("#refresh").click(function(){
+                                     $.ajax({
+                                        url: "/refresh",   //对应flask中的路由
+                                        type: "POST", //请求方法
+                                        data: 'hello',   //传送的数据
+
+                                    })
+                                });
+
+                                function myFunction(){
+                                    setTimeout(function(){alert("开始读取")},10000);
+                                    setTimeout(function(){alert("正在准备读取")},0);
+                                }
+
+
+                            </script>
+                            <br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+
+    	<!-- END WRAPPER -->
+
+
+        <!--jquery-1.12.4.min.js-->
+		<script  src="../static/assets/js/jquery.min.js"></script>
+
+		<!--chartist.min.js-->
+        <script src="../static/assets/chartist/js/chartist.min.js"></script>
+        <script src="../static/assets/chartist/js/chartist-tooltip-plugin.js"></script>
+        <script src="../static/assets/chartist/js/chartist-custom.js"></script>
+
+        <!--bootstrap.min.js-->
+        <script src="../static/assets/js/bootstrap.min.js"></script>
+
+		<!--jquery.slimscroll.min.js-->
+        <script src="../static/assets/js/jquery.slimscroll.min.js"></script>
+
+		<!--feather.min.js-->
+        <script src="../static/assets/js/feather.min.js"></script>
+
+		<!-- DataMaps Plugin Js -->
+        <script src="../static/assets/js/d3.min.js"></script>
+        <script src="../static/assets/js/topojson.js"></script>
+        <script src="../static/assets/js/datamaps.world.min.js"></script>
+
+        <!--fontawesome-all.min.js-->
+        <script src="../static/assets/js/fontawesome-all.min.js"></script>
+
+        <!--Custom JS-->
+        <script src="../static/assets/js/custom.js"></script>
+    </body>
+</html>

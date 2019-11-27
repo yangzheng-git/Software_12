@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <!-- META DATA -->
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+        <!-- TITLE OF SITE -->
+        <title>街道事件</title>
+        <!-- favicon -->
+		<!--<link rel="shortcat icon" href="/favicon.ico" type="image/x-icon">-->
+
+        <!--font-awesome.min.css-->
+		<link rel="stylesheet" href="../static/assets/css/font-awesome.min.css">
+
+        <!--linear icon css-->
+		<link rel="stylesheet" href="../static/assets/css/icon-font.min.css">
+
+		<!--chartist.min.css-->
+        <link rel="stylesheet" href="../static/assets/chartist/css/chartist.min.css">
+
+        <!--bootstrap.min.css-->
+        <link rel="stylesheet" href="../static/assets/css/bootstrap.min.css">
+
+        <!--style.css-->
+        <link rel="stylesheet" href="../static/assets/css/style.css">
+
+        <!--responsive.css-->
+        <link rel="stylesheet" href="../static/assets/css/responsive.css">
+
+        <link rel="stylesheet" type="text/css" href="../static/assets/css/daterangepicker.css" />
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]-->
+        <script src="../static/assets/js/html5shiv.min.js"></script>
+	    <script src="../static/assets/js/respond.min.js"></script>
+        <script type="text/javascript" src="../static/assets/js/refresh/jquery.min.js"></script>
+        <script type="text/javascript" src="../static/assets/js/moment.min.js"></script>
+        <script type="text/javascript" src="../static/assets/js/daterangepicker.min.js"></script>
+        <script src="../static/plugin/echarts-4.4.0/dist/echarts.min.js"></script>
+        <![endif]-->
+
+    </head>
+
+    <body>
+    <div hidden id="bubbles"></div>
+    	<!-- wrapper -->
+	<div id="wrapper">
+
+		<!-- navbar -->
+		<nav class="navbar navbar-default navbar-fixed-top">
+			<div class="brand" style="width:200px">
+				<a href="/display" style="font-size:20px">
+					{{current.role}}<span>{{current.name}}</span>
+				</a>
+			</div><!--/.brand -->
+			<div class="container-fluid">
+				<span class="navbar-left">
+					<br>
+					<h1>&nbsp;政府大数据实时治理系统</h1>
+				</span><!--/form -->
+				<div class="navbar-menu">
+					<ul class="nav navbar-nav navbar-right">
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle icon-menu" data-toggle="dropdown">
+								<i data-feather="bell"></i>
+								<span class="badge badge-bg-1">{{ dbnum }}</span>
+							</a>
+						</li>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+								<img src="{{current.real_avatar}}" class="img-circle" alt="parson-img" height="40px">
+								<i class="icon-submenu fa fa-angle-down"></i>
+							</a>
+							<ul class="dropdown-menu">
+								<li><a href="/profile"><i class="lnr lnr-user"></i> <span>个人信息</span></a></li>
+								<li><a href="/"><i class="lnr lnr-exit"></i> <span>退出登录</span></a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div><!--/.container-fluid -->
+
+		</nav><!--/nav -->
+		<!-- END NAVBAR -->
+
+		<!-- LEFT SIDEBAR -->
+		<div id="sidebar-nav" class="sidebar" style="width:200px">
+			<div class="sidebar-scroll">
+				<nav>
+					<ul class="nav">
+
+						<li>
+							<a href="/display" >
+								<i data-feather="home"></i> <span>主页</span>
+							</a>
+						</li>
+
+						<li>
+							<a href="/chart1">
+								<i data-feather="pie-chart"></i> <span>问题情况</span>
+							</a>
+						</li>
+
+						<li class="active">
+							<a href="/chart2">
+								<i data-feather="bar-chart"></i> <span>街道事件</span>
+							</a>
+						</li>
+
+						<li>
+							<a href="/chart3">
+								<i data-feather="map-pin"></i> <span>热点社区</span>
+							</a>
+						</li>
+
+						{% if current.role == "管理员" %}
+							<li>
+								<a href="/manage">
+									<i data-feather="user-check"></i> <span>数据和账号管理</span>
+								</a>
+							</li>
+						{% endif %}
+
+						<li>
+							<a href="/abnormal">
+								<i data-feather="bell"></i> <span>未结办事件</span>
+							</a>
+						</li>
+					</ul>
+				</nav>
+			</div>
+
+		</div>
+		<!-- END LEFT SIDEBAR -->
+
+		<!-- MAIN -->
+		<div class="main">
+
+			<!-- MAIN CONTENT -->
+			<div class="main-content">
+				<div class="container-fluid">
+
+					<div class="main-content-head">
+						<h2>你好 {{current.role}}{{current.name}}!</h2>
+						<p>欢迎使用政府大数据实时治理系统</p>
+					</div>
+
+                    <div class="profile-content">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="box">
+                                    <div class="item">
+                                        <div class="item-responsive ">
+                                            <br>
+                                            <h2 align="center" style="font-size:25px">异常事件报警</h2>
+                                            <p hidden id="abdata">{{ abdata }}</p>
+
+                                            <marquee  direction="up"  behavior="scroll"  scrollamount="5"  loop="-1"  bgcolor="white"  hspace="100"   vspace="50"  height="100"></marquee>
+
+                                            <script>
+                                                    var div = document.getElementById('abdata');
+                                                    obj = JSON.parse(div.innerHTML);
+                                                    var elments = new Array();//图例
+                                                    for(var i=0;i<obj.length;i++)
+                                                    {
+                                                        elments[i]=obj[i]
+                                                    }
+
+                                                     for(var i=0;i<obj.length;i++) {
+                                                         marquee = document.getElementsByTagName('marquee')[0];
+                                                         str = marquee.innerHTML;
+                                                         str += "<p color=\"black\">"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\"><span>" + "  " + elments[i].time +" "+ "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#66CCCC\"  size=\"5\"><span>" + elments[i].street + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\">" + "的" + "</font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#00FFFF\"  size=\"5\"><span> " + elments[i].community + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\">" + "从" + "</font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#990099\"  size=\"5\"><span> " + elments[i].source + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\">" + "接到" + "</font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#CC0000\"  size=\"5\"><span> " + elments[i].sub_type + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#0000CC\"  size=\"5\"><span> " + elments[i].property + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\">" + "，请" + "</font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#CC00CC\"  size=\"5\"><span> " + elments[i].unity_name + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\">" + "尽快前往处理." + "</font>"
+                                                         str += "<br></p>"
+                                                         marquee.innerHTML = str;
+                                                     }
+                                            </script>
+                                        </div><!--/.table-responsive-->
+                                    </div><!--/.item-->
+                                </div><!--/.box-->
+                            </div><!--/.col-->
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="box">
+                                    <div class="box-head">
+                                        <h2>街道事件</h2>
+                                    </div><!--/.box-head-->
+                                    <div class="item">
+                                        <div class="item-responsive ">
+                                            <p hidden id="month1">{{ M1 }}</p>
+                                            <p hidden id="day1">{{ D1 }}</p>
+                                            <p hidden id="month2">{{ M2 }}</p>
+                                            <p hidden id="day2">{{ D2 }}</p>
+                                            <p hidden id="demo">测试</p>
+
+                                            <p hidden id="data">{{ data }}</p>
+                                            <div id="bar_echarts" style="width: auto;height:800px;"></div>
+                                            <div  hidden id="div1">
+                                                <p >{{ data }}</p>
+                                            </div>
+                                            <script>
+                                                var div = document.getElementById('data');
+
+                                                    if (div.innerText.indexOf("没有") != -1)
+                                                    {
+                                                        alert('没有该日期范围的数据');
+                                                    }
+                                                function ajaxForm() {
+                                                    $.ajax({
+                                                        url: "/chart2/refresh",   //对应flask中的路由
+                                                        type: "POST", //请求方法
+                                                        data: 'hello',   //传送的数据
+                                                        success: function (data1) {
+                                                            document.getElementById('div1').innerText = data1;
+                                                        }
+                                                    })
+                                                }
+                                                function read() {
+
+
+                                                    var div = document.getElementById('data');
+                                                    obj = JSON.parse(div.innerHTML);
+                                                    document.getElementById("demo").innerHTML = obj;
+                                                    console.log(obj)
+                                                }
+                                                 function myFunction() {
+                                                    setInterval(function () {
+                                                        $(document).ready(function () {
+
+                                                            ajaxForm()
+
+                                                            judge()
+                                                        });
+                                                    }, 2000);
+                                                }
+
+                                                function judge() {
+                                                    if (document.getElementById('data').innerText !== document.getElementById('div1').innerText) {
+                                                        document.getElementById('data').innerText = $.trim(document.getElementById('div1').innerText);
+                                                        read()
+                                                        run()
+                                                    }
+                                                }
+
+
+                                            </script>
+                                            <br>
+                                            <div class="time" align="center">
+                                                <form method="post">
+                                                     <input type="text" class="form-control" name="daterange" style="width:20%" value="10/29/2018 - 10/29/2018" />
+                                                        <script>
+                                                        $(function() {
+                                                          $('input[name="daterange"]').daterangepicker({
+                                                            opens: 'left'
+                                                          }, function(start, end, label) {
+                                                            console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+                                                          });
+                                                        });
+                                                        </script>
+                                                    <br>
+                                                    <div align="center">
+                                                        <button class='button btn btn-primary'>查询</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+
+
+
+
+
+                                            <script>
+                                             function run() {
+
+
+                                                var myChart = echarts.init(document.getElementById('bar_echarts'));
+
+                                                ///////////////////////////////////////////////////////
+                                                var elments = new Array();//图例
+                                                for (var i = 0; i < obj.length; i++) {
+                                                    elments[i] = obj[i][0]
+                                                }
+                                                // document.write(elments)
+                                                var elments2 = new Array();
+
+                                                var typename = new Array();
+
+                                                for (var i = 0; i < obj.length; i++) {
+                                                    for (var name_n in obj[i][1]) {
+                                                        //document.write(name_n)
+                                                        if (typename.indexOf(name_n) == -1) { typename.push(name_n) }
+
+                                                    }
+                                                }
+                                                var ser = new Array();
+
+                                               // document.write(typename[1])
+                                                for ( var name_n=0;name_n<typename.length;name_n++) {
+                                                    var k = {};
+                                                   // document.write(name_n)
+                                                    k.name = typename[name_n];
+                                                    k.type = 'bar';
+                                                    k.stack = '大类名称';
+                                                    k.data=[];
+                                                    for (var i = 0; i < obj.length; i++) {
+                                                        if (typename[name_n] in obj[i][1]) {
+                                                            var data = obj[i][1][typename[name_n]];
+                                                        }
+                                                        else {
+                                                            var data =0;
+                                                        }
+                                                        k.data[i] = data;
+                                                    }
+                                                    ser.push(k)
+
+                                                }
+
+
+
+                                               // document.write(ser[0].data);
+                                                //document.write(typename[50]);
+                                                //  {#for(var p in typename)#}
+                                                //  {#{#}
+                                                //  {#    document.write(p+'  ');#}
+                                                //  {#}#}
+
+
+                                                // {#document.write(typename);#}
+                                                //////////////////////////////////////////////
+                                                var option = {
+                                                    title: {
+                                                            text: '今日民生',
+                                                            subtext: '2018年'+document.getElementById('month1').innerText+'月'+document.getElementById('day1').innerText+'日'+' - '
+                                                                +'2018年'+document.getElementById('month2').innerText+'月'+document.getElementById('day2').innerText+'日',
+                                                            x: 'center'
+                                                           // y:{50}
+                                                        },
+                                                    tooltip: {
+                                                        trigger: 'axis',
+                                                        axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                                                            type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                                                        }
+                                                    },
+                                                    legend: {                     //图例
+                                                        data: typename,
+                                                         type: 'scroll',
+                                                        orient: 'vertical',
+
+
+                                                        right: 10,
+                                                        top: 20,
+                                                        bottom: 20
+                                                        //selected: data.selected
+                                                        // {#['饲养宠物家禽扰民',#}
+                                                        // {#   '行道树倒压占路',#}
+                                                        // {#   '积存垃圾渣土',#}
+                                                        // {#   '城市管理',#}
+                                                        // {#   '道路破损',#}
+                                                        // {#   '店外经营',#}
+                                                        // {#   '工业红线内噪声',#}
+                                                        // {#   '下水井盖',#}
+                                                        // {#   '公共交通管理',#}
+                                                        // {#   '无照经营游商'#}
+                                                        // {#   ],#}
+                                                        //orient: 'vertical',       //垂直显示
+                                                        //y: 'top',              //沿Y轴居中
+                                                       // x: 'right',                //居右显示
+                                                        //align: 'right',
+                                                       // align: 'left',
+                                                //left: 10
+                                                    },
+                                                    grid: {
+                                                        left: '5%',
+                                                        right: '25%',
+                                                        bottom: '3%',
+                                                        padding: 50,
+                                                        containLabel: true
+                                                    },
+                                                    xAxis: [                      //横坐标为街道名称
+                                                        {
+                                                            type: 'category',
+                                                            data: elments
+                                                            //['碧岭街道', '坑梓街道', '龙田街道', '马峦街道', '坪山街道', '石井街道']
+                                                        }
+                                                    ],
+                                                    yAxis: [                      //纵坐标为事件数量的值
+                                                        {
+                                                            type: 'value'
+                                                        }
+                                                    ],
+                                                    series: ser
+                                                    // [                     //各类在各个街道的事件数量
+                                                    //     {
+                                                    //         name: '饲养宠物家禽扰民',
+                                                    //         type: 'bar',
+                                                    //         stack: '大类名称',
+                                                    //         data: [120, 132, 101, 134, 90, 230]
+                                                    //     },
+                                                    //     {
+                                                    //         name: '行道树倒压占路',
+                                                    //         type: 'bar',
+                                                    //         stack: '大类名称',
+                                                    //         data: [220, 182, 191, 234, 290, 330]
+                                                    //     },
+                                                    //     {
+                                                    //         name: '积存垃圾渣土',
+                                                    //         type: 'bar',
+                                                    //         stack: '大类名称',
+                                                    //         data: [150, 232, 201, 154, 190, 330]
+                                                    //     },
+                                                    //     {
+                                                    //         name: '城市管理',
+                                                    //         type: 'bar',
+                                                    //         stack: '大类名称',
+                                                    //         data: [120, 132, 101, 134, 90, 230]
+                                                    //     },
+                                                    //     {
+                                                    //         name: '道路破损',
+                                                    //         type: 'bar',
+                                                    //         stack: '大类名称',
+                                                    //         data: [120, 132, 101, 134, 90, 230]
+                                                    //     },
+                                                    //     {
+                                                    //         name: '店外经营',
+                                                    //         type: 'bar',
+                                                    //         stack: '大类名称',
+                                                    //         data: [120, 132, 101, 134, 90, 230]
+                                                    //     },
+                                                    //     {
+                                                    //         name: '工业红线内噪声',
+                                                    //         type: 'bar',
+                                                    //         stack: '大类名称',
+                                                    //         data: [120, 132, 101, 134, 90, 230]
+                                                    //     },
+                                                    //     {
+                                                    //         name: '下水井盖',
+                                                    //         type: 'bar',
+                                                    //         stack: '大类名称',
+                                                    //         data: [120, 132, 101, 134, 90, 230]
+                                                    //     },
+                                                    //     {
+                                                    //         name: '公共交通管理',
+                                                    //         type: 'bar',
+                                                    //         stack: '大类名称',
+                                                    //         data: [120, 132, 101, 134, 90, 230]
+                                                    //     },
+                                                    //     {
+                                                    //         name: '无照经营游商',
+                                                    //         type: 'bar',
+                                                    //         stack: '大类名称',
+                                                    //         data: [120, 132, 101, 134, 90, 230]
+                                                    //     }
+                                                    // ]
+                                                };
+                                                myChart.setOption(option);
+                                                  }
+                                                read();
+                                                run();
+                                                myFunction()
+                                            </script>
+                                        </div><!--/.table-responsive-->
+                                    </div><!--/.item-->
+                                </div><!--/.box-->
+                            </div><!--/.col-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+
+    	<!-- END WRAPPER -->
+
+
+
+		<!--chartist.min.js-->
+        <script src="../static/assets/chartist/js/chartist.min.js"></script>
+        <script src="../static/assets/chartist/js/chartist-tooltip-plugin.js"></script>
+        <script src="../static/assets/chartist/js/chartist-custom.js"></script>
+
+        <!--bootstrap.min.js-->
+        <script src="../static/assets/js/bootstrap.min.js"></script>
+
+		<!--jquery.slimscroll.min.js-->
+        <script src="../static/assets/js/jquery.slimscroll.min.js"></script>
+
+		<!--feather.min.js-->
+        <script src="../static/assets/js/feather.min.js"></script>
+
+		<!-- DataMaps Plugin Js -->
+        <script src="../static/assets/js/d3.min.js"></script>
+        <script src="../static/assets/js/topojson.js"></script>
+        <script src="../static/assets/js/datamaps.world.min.js"></script>
+
+        <!--fontawesome-all.min.js-->
+        <script src="../static/assets/js/fontawesome-all.min.js"></script>
+
+        <!--Custom JS-->
+        <script src="../static/assets/js/custom.js"></script>
+    </body>
+</html>

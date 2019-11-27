@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <!-- META DATA -->
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+        <!-- TITLE OF SITE -->
+        <title>主页</title>
+        <!-- favicon -->
+		<!--<link rel="shortcat icon" href="/favicon.ico" type="image/x-icon">-->
+
+        <!--font-awesome.min.css-->
+		<link rel="stylesheet" href="../static/font-awesome/css/font-awesome.min.css">
+
+        <!--linear icon css-->
+		<link rel="stylesheet" href="../static/assets/css/icon-font.min.css">
+
+		<!--chartist.min.css-->
+        <link rel="stylesheet" href="../static/assets/chartist/css/chartist.min.css">
+
+        <!--bootstrap.min.css-->
+        <link rel="stylesheet" href="../static/assets/css/bootstrap.min.css">
+
+        <!--style.css-->
+        <link rel="stylesheet" href="../static/assets/css/style.css">
+
+        <!--responsive.css-->
+        <link rel="stylesheet" href="../static/assets/css/responsive.css">
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]-->
+        <script src="../static/assets/js/html5shiv.min.js"></script>
+		<script src="../static/assets/js/respond.min.js"></script>
+
+		<script type="text/javascript" src="../static/assets/js/jquery-2.1.1.js"></script>
+		<script src="../static/assets/js/enjoyhint.js"></script>
+		<link href="../static/assets/css/enjoyhint.css" rel="stylesheet">
+		<script src="../static/assets/js/script.js"></script>
+        <![endif]-->
+
+    </head>
+
+    <body>
+	<div hidden id="bubbles"></div>
+    	<!-- wrapper -->
+	<div id="wrapper">
+
+		<!-- navbar -->
+		<nav class="navbar navbar-default navbar-fixed-top">
+			<div class="brand" style="width:200px">
+				<a href="/display" style="font-size:20px">
+					{{current.role}}<span>{{current.name}}</span>
+				</a>
+			</div><!--/.brand -->
+			<div class="container-fluid">
+				<span class="navbar-left">
+					<br>
+					<h1>&nbsp;政府大数据实时治理系统</h1>
+				</span><!--/form -->
+				<div class="navbar-menu">
+					<ul class="nav navbar-nav navbar-right">
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle icon-menu" data-toggle="dropdown">
+								<i data-feather="bell"></i>
+								<span class="badge badge-bg-1">{{ dbnum }}</span>
+							</a>
+						</li>
+						<li class="dropdown" id="step6">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+								<img src="{{current.real_avatar}}" class="img-circle" alt="parson-img" height="40px">
+								<i class="icon-submenu fa fa-angle-down"></i>
+							</a>
+							<ul class="dropdown-menu">
+								<li><a href="profile"><i class="lnr lnr-user"></i> <span>个人信息</span></a></li>
+								<li><a href="/"><i class="lnr lnr-exit"></i> <span>退出登录</span></a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div><!--/.container-fluid -->
+
+		</nav><!--/nav -->
+		<!-- END NAVBAR -->
+
+		<!-- LEFT SIDEBAR -->
+		<div id="sidebar-nav" class="sidebar" style="width:200px">
+			<div class="sidebar-scroll">
+				<nav>
+					<ul class="nav">
+
+						<li class="active" id="step1">
+							<a href="/display" >
+								<i data-feather="home"></i> <span>主页</span>
+							</a>
+						</li>
+
+						<li id="step2">
+							<a href="/chart1">
+								<i data-feather="pie-chart"></i> <span>问题情况</span>
+							</a>
+						</li>
+
+						<li id="step3">
+							<a href="/chart2">
+								<i data-feather="bar-chart"></i> <span>街道事件</span>
+							</a>
+						</li>
+
+						<li id="step4">
+							<a href="/chart3">
+								<i data-feather="map-pin"></i> <span>热点社区</span>
+							</a>
+						</li>
+
+						{% if current.role == "管理员" %}
+							<li>
+								<a href="/manage">
+									<i data-feather="user-check"></i> <span>数据和账号管理</span>
+								</a>
+							</li>
+						{% endif %}
+
+						<li id="step5">
+							<a href="/abnormal">
+								<i data-feather="bell"></i> <span>未结办事件</span>
+							</a>
+						</li>
+					</ul>
+				</nav>
+			</div>
+
+		</div>
+		<!-- END LEFT SIDEBAR -->
+
+		<!-- MAIN -->
+		<div class="main">
+
+			<!-- MAIN CONTENT -->
+			<div class="main-content">
+				<div class="container-fluid">
+
+					<div class="main-content-head">
+						<h2>你好 {{current.role}}{{current.name}}!</h2>
+						<p>欢迎使用政府大数据实时治理系统</p>
+					</div>
+
+					<div class="profile-content">
+						<div class="row">
+                            <div class="col-sm-12">
+                                <div class="box">
+                                    <div class="item">
+                                        <div class="item-responsive ">
+                                            <br>
+                                            <h2 align="center" style="font-size:25px">异常事件报警</h2>
+                                            <p hidden id="abdata">{{ abdata }}</p>
+
+                                            <marquee  direction="up"  behavior="scroll"  scrollamount="10"  loop="-1"  bgcolor="white"  hspace="100"   vspace="50"  height="400"></marquee>
+
+                                            <script>
+                                                    var div = document.getElementById('abdata');
+                                                    obj = JSON.parse(div.innerHTML);
+                                                    var elments = new Array();//图例
+                                                    for(var i=0;i<obj.length;i++)
+                                                    {
+                                                        elments[i]=obj[i]
+                                                    }
+
+                                                     for(var i=0;i<obj.length;i++) {
+                                                         marquee = document.getElementsByTagName('marquee')[0];
+                                                         str = marquee.innerHTML;
+                                                         str += "<p color=\"black\">"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\"><span>" + "  " + elments[i].time +" "+ "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#66CCCC\"  size=\"5\"><span>" + elments[i].street + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\">" + "的" + "</font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#00FFFF\"  size=\"5\"><span> " + elments[i].community + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\">" + "从" + "</font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#990099\"  size=\"5\"><span> " + elments[i].source + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\">" + "接到" + "</font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#CC0000\"  size=\"5\"><span> " + elments[i].sub_type + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#0000CC\"  size=\"5\"><span> " + elments[i].property + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\">" + "，请" + "</font>"
+                                                         str += "<font  face=\"隶书\"  color=\"#CC00CC\"  size=\"5\"><span> " + elments[i].unity_name + "</span></font>"
+                                                         str += "<font  face=\"隶书\"  color=\"black\"  size=\"5\">" + "尽快前往处理." + "</font>"
+                                                         str += "<br></p>"
+                                                         marquee.innerHTML = str;
+                                                     }
+                                            </script>
+                                        </div><!--/.table-responsive-->
+                                    </div><!--/.item-->
+                                </div><!--/.box-->
+                            </div><!--/.col-->
+                        </div>
+
+						<div class="row">
+							<div class="col-sm-4">
+								<div class="profile-state">
+									<div class="icon-box">
+										<span class="icon-bg icon-bg-1">
+											<img src="../static/assets/images/user-icon.png" alt="user-icon">
+										</span>
+										<h2>总用户</h2>
+									</div><!--/.icon-box-->
+									<h3>{{usernum}}</h3>
+									<p>{{checknum}} 人未审核</p>
+								</div><!--/.profile-state-->
+							</div><!--/.col-->
+							<div class="col-sm-4">
+								<div class="profile-state">
+									<div class="icon-box">
+										<span class="icon-bg icon-bg-2">
+											<img src="../static/assets/images/add-cart.png" alt="add-cart">
+										</span>
+										<h2>总民生数据</h2>
+									</div><!--/.icon-box-->
+									<h3>{{datanum}}</h3>
+									<p>? new</p>
+								</div><!--/.profile-state-->
+							</div><!--/.col-->
+							<div class="col-sm-4">
+								<div class="profile-state">
+									<div class="icon-box">
+										<span class="icon-bg icon-bg-3">
+											<img src="../static/assets/images/money-icon.png" alt="money-icon">
+										</span>
+										<h2>联系方式</h2>
+									</div><!--/.icon-box-->
+									<h3>QQ：2446042344</h3>
+									<p>接受赞助</p>
+								</div><!--/.profile-state-->
+							</div><!--/.col-->
+						</div><!--/.row-->
+					</div><!--/.profile-content-->
+
+				</div><!--/.container-fluid-->;
+
+			</div><!--/.main-content-->
+
+		</div>
+		<!-- END MAIN -->
+
+		<div class="clearfix"></div>
+
+		<footer>
+			<div class="container-fluid">
+				<p>&copy; 2017 ThemeSINE. All Right Reserved - More Templates <a href="http://www.cssmoban.com/" target="_blank" title="模板之家">模板之家</a> - Collect from <a href="http://www.cssmoban.com/" title="网页模板" target="_blank">网页模板</a></p>
+			</div>
+
+		</footer>
+
+	</div>
+	<!-- END WRAPPER -->
+
+
+        <!--jquery-1.12.4.min.js-->
+		<!-- <script  src="../static/assets/js/jquery.min.js"></script> -->
+
+		<!--chartist.min.js-->
+        <script src="../static/assets/chartist/js/chartist.min.js"></script>
+        <script src="../static/assets/chartist/js/chartist-tooltip-plugin.js"></script>
+        <script src="../static/assets/chartist/js/chartist-custom.js"></script>
+
+        <!--bootstrap.min.js-->
+        <script src="../static/assets/js/bootstrap.min.js"></script>
+
+		<!--jquery.slimscroll.min.js-->
+        <script src="../static/assets/js/jquery.slimscroll.min.js"></script>
+
+		<!--feather.min.js-->
+        <script src="../static/assets/js/feather.min.js"></script>
+
+		<!-- DataMaps Plugin Js -->
+        <script src="../static/assets/js/d3.min.js"></script>
+        <script src="../static/assets/js/topojson.js"></script>
+        <script src="../static/assets/js/datamaps.world.min.js"></script>
+
+        <!--fontawesome-all.min.js-->
+        <script src="../static/assets/js/fontawesome-all.min.js"></script>
+
+        <!--Custom JS-->
+        <script src="../static/assets/js/custom.js"></script>
+
+		<script>
+
+			//initialize instance
+		var enjoyhint_instance = new EnjoyHint({});
+
+		//simple config.
+		//Only one step - highlighting(with description) "New" button
+		//hide EnjoyHint after a click on the button.
+		var enjoyhint_script_steps = [
+			{
+				"next #step1":
+					"欢迎来到政府大数据治理实时分析系统，新手引导将使您快速熟悉本系统的使用方法。<br>点击下一步了解更多..."
+			},
+			{
+				"next #step2":
+					"点击这里，您将看到由<text style='color: #00ebe7'>饼图形式</text>呈现的特定时间范围内的“问题性质”的数目及事件结办情况"
+			},
+			{
+				"next #step3" :
+					"点击这里，您将看到由<text style='color: #ff0099'>柱状堆叠图形式</text>呈现的各街道民生事件情况"
+			},
+			{
+				"next #step4" :
+					"点击这里，您将看到在<text style='color: #00a6eb'>深圳市地图</text>上呈现的热点社区情况",
+				shape : 'circle',
+				radius: 40
+			},
+			{
+				"next #step5" :
+					"在这里，您可以查看您所在部门的各个未结办的<text style='color: #ff6600'>异常事件</text>",
+			},
+			{
+				"click #step6" :
+					"在这里，您可以编辑自己的个人资料（包括修改密码、头像）或是退出登录<br><text style='color: #ffff66'>请尝试点击下拉框以完成引导</text>",
+			showSkip: false
+			}
+
+		];
+
+		//set script config
+		enjoyhint_instance.set(enjoyhint_script_steps);
+
+		//run Enjoyhint script
+		enjoyhint_instance.run();
+
+		</script>
+    </body>
+</html>

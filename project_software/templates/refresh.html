@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title><link rel="stylesheet" href="../static/assets/css/bootstrap.min.css">
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js">
+    </script>
+</head>
+<body>
+    <button id="refresh" class='btn btn-primary' >批量导入数据</button>
+    <br>
+{#    <button id="init" class='btn btn-primary' >初始化数据</button>#}
+{#重新载入除了十月三十日的数据#}
+    <script>
+        $("#refresh").click(function(){
+             $.ajax({
+                url: "/refresh",   //对应flask中的路由
+                type: "POST", //请求方法
+                data: 'hello',   //传送的数据
+
+            })
+
+        });
+
+
+    </script>
+</body>
+</html>
